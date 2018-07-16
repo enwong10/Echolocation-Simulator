@@ -2,13 +2,20 @@
 // GLOBAL VARIABLES
 // ===============================
 
-// ----- sensors to Arduino pins
+// ----- Sensors to Arduino Pins
 #define Trig1 4                       //sensor A "Trig" pin
-#define Trig2 6                       //sensor B "Trig" pin          
-#define Trig3 8                       //sensor C "Trig" pin
-#define Trig4 10                      //sensor D "Trig" pin          
+#define Echo1 5                       //sensor A "Echo" pin
 
-// ----- variables
+#define Trig2 6                       //sensor B "Trig" pin          
+#define Echo2 7                       //sensor B "Echo" pin
+
+#define Trig3 8                       //sensor C "Trig" pin
+#define Echo3 9                       //sensor C "Echo" pin
+
+#define Trig4 10                      //sensor D "Trig" pin          
+#define Echo4 11                      //sensor D "Echo" pin
+
+// ----- Misc Variables
 volatile float Distance1;                      //calculated distance of sensor 1 (cm)
 volatile float Distance2;                      //calculated distance of sensor 2 (cm)
 volatile float Distance3;                      //calculated distance of sensor 3 (cm)
@@ -91,7 +98,7 @@ ISR(TIMER2_COMPA_vect)         //interrupts every millisecond
   TaskTimer++;                             //add to count
 
   // ----- loop runs every 
-  if (TaskTimer > 2000 && state == 0)      //runs every 2 seconds, and only when displayed (state == 0)
+  if (TaskTimer > 1000 && state == 0)      //runs every 2 seconds, and only when displayed (state == 0)
   {
     TaskTimer = 0;                         //reset timer
     TaskFlag = true;                       //signal main loop to execute task
@@ -144,7 +151,7 @@ void measure()                //sends and receives signals from sensors
 //Serial.println("Pulse3");
 
   while (!digitalRead(Echo3));
-  start_time = micros();
+  start_time = getTime();
   echo_flag = false;
 
   while (!echo_flag){}
@@ -159,7 +166,7 @@ void measure()                //sends and receives signals from sensors
 //Serial.println("Pulse4");
 
   while (!digitalRead(Echo4));
-  start_time = micros();
+  start_time = getTime();
   echo_flag = false;
 
   while (!echo_flag){}
