@@ -21,6 +21,7 @@ volatile float Distance2;                      //calculated distance of sensor 2
 volatile float Distance3;                      //calculated distance of sensor 3 (cm)
 volatile float Distance4;                      //calculated distance of sensor 4 (cm)
 volatile boolean echo_flag;                    //ensures interrupt is triggered before starting next sensor
+volatile bool isBusy;
 volatile unsigned long start_time;             //takes start time of sensor (milliseconds)
 volatile int state = 0;                        //tells the processing code which display to show
 volatile int sensor;                           //stores the number of the sensor currently being used
@@ -35,8 +36,8 @@ volatile unsigned long ovf_count = 0;          //counts the amount of times Time
 // ===============================
 void setup() {
   // ----- configure serial port (communication between code and processing or code and screen (when debugging)
-//  Serial.begin(115200);
-  Serial.begin(9600);
+  Serial.begin(115200);
+ // Serial.begin(9600);
 
   // ----- configure arduino pin
   pinMode(Echo1, INPUT);              //make echo pins inputs
@@ -54,7 +55,7 @@ void setup() {
             
   // ----- set interrupt pins
   attachInterrupt(0, echo_received, FALLING);         //set to trigger when an echo is received
-  attachInterrupt(1, state_change, CHANGE);           //set to change between menu and display
+  attachInterrupt(1, state_change, RISING);           //set to change between menu and display
   
   // ----- configure timers 
   noInterrupts();                     //disable interrupts
@@ -66,7 +67,7 @@ void setup() {
   OCR2A = 124;                        //interrupt triggers about every 1ms
   TIMSK2 |= (1 << OCIE2A);            //enable output compare interrupt
 
-  TCCR0B = 0b11;                      //select clock 3
+  TCCR0B = 0x3;                      //select clock 3
   OCR0A = 255;                        //interrupt triggers at every overflow
   TIMSK0 |= (1 << OCIE0A);            //enable output compare interrupt
   interrupts();                       //enable interrupts
@@ -98,10 +99,11 @@ ISR(TIMER2_COMPA_vect)         //interrupts every millisecond
   TaskTimer++;                             //add to count
 
   // ----- loop runs every 
-  if (TaskTimer > 1000 && state == 0)      //runs every 2 seconds, and only when displayed (state == 0)
+  if (TaskTimer > 2000 && state == 0)      //runs every 2 seconds, and only when displayed (state == 0)
   {
-    TaskTimer = 0;                         //reset timer
+    TaskTimer = 0;                         //reset counter
     TaskFlag = true;                       //signal main loop to execute task
+    isBusy = true;
 //    Serial.println("Start");             //debugging 
   }
 }
@@ -171,6 +173,7 @@ void measure()                //sends and receives signals from sensors
 
   while (!echo_flag){}
 
+  isBusy = false;
   // ----- AFTER ALL DISTANCES HAVE BEEN CALCULATED, OUTPUT TO SCREEN/DISPLAY
   Serial.print(Distance1); Serial.print(","); Serial.print(Distance2); Serial.print(","); Serial.print(Distance3); Serial.print(","); Serial.print(Distance4); Serial.print(","); Serial.println(state);
 }
@@ -180,11 +183,15 @@ void measure()                //sends and receives signals from sensors
 // ===============================
 void state_change()             //method called by interrupt to change state of display
 {
+//  Serial.println ("State Interrupt");
   //flips the value of the state
   if (state == 0)
     state = 1;
   else
     state = 0;
+
+  if(!isBusy)
+    Serial.print(Distance1); Serial.print(","); Serial.print(Distance2); Serial.print(","); Serial.print(Distance3); Serial.print(","); Serial.print(Distance4); Serial.print(","); Serial.println(state);
 }
 
 void echo_received()                  //method called by interrupt when echo is received
