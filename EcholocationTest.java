@@ -58,7 +58,7 @@ public class EcholocationTest
 	double y = Math.sqrt (Math.pow (D3, 2) - Math.pow (M2, 2));
 	System.out.println ();
 
-	double z = 100 - Math.sqrt (Math.pow (M2, 2) - Math.pow (length - x + 50, 2));
+	double z = 150 - Math.sqrt (Math.pow (M2, 2) - Math.pow (length - x + 50, 2));
 
 	System.out.println ("X VALUE: " + df.format (x));
 	System.out.println ("Y VALUE: " + df.format (y));

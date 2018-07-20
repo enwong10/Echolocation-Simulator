@@ -21,7 +21,7 @@ volatile float Distance2;                      //calculated distance of sensor 2
 volatile float Distance3;                      //calculated distance of sensor 3 (cm)
 volatile float Distance4;                      //calculated distance of sensor 4 (cm)
 volatile boolean echo_flag;                    //ensures interrupt is triggered before starting next sensor
-volatile bool isBusy;
+volatile bool isBusy;                          //determines whether or not the system is measuring the distances
 volatile unsigned long start_time;             //takes start time of sensor (milliseconds)
 volatile int state = 0;                        //tells the processing code which display to show
 volatile int sensor;                           //stores the number of the sensor currently being used
@@ -62,7 +62,7 @@ void setup() {
   TCCR2A = 0;                         //clear control registers
   TCCR2B = 0;
   TCCR2B |= (1 << CS22) |             //select clock 5  
-            (1 << CS20) ;
+              (1 << CS20) ;
   TCNT2 = 0;                          //reset counter
   OCR2A = 124;                        //interrupt triggers about every 1ms
   TIMSK2 |= (1 << OCIE2A);            //enable output compare interrupt
@@ -190,7 +190,7 @@ void state_change()             //method called by interrupt to change state of 
   else
     state = 0;
 
-  if(!isBusy)
+  if(!isBusy)                   //output, if system is not currently measuring
     Serial.print(Distance1); Serial.print(","); Serial.print(Distance2); Serial.print(","); Serial.print(Distance3); Serial.print(","); Serial.print(Distance4); Serial.print(","); Serial.println(state);
 }
 

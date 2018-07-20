@@ -86,10 +86,10 @@ void serialEvent(Serial myPort)
     String[] inputs = split(Input_string, ',');
 
     //// ----- gather Heron variables
-    float a = float(inputs[0]);             //d1    
-    float b = float(inputs[1]);             //d2                     
-    float c = float(inputs[2]);             //d3
-    float d = float(inputs[3]);             //d4   
+    float c = float(inputs[0]);             //d1     //<>//
+    float d = float(inputs[1]);             //d2                     
+    float a = float(inputs[2]);             //d3
+    float b = float(inputs[3]);             //d4   
     state = int(inputs[4]);
     float maxDist = sqrt(sqrt(pow(100,2) + pow(150,2)) + pow(100,2));
     float s1 = (a + b + Baseline) / 2;
@@ -97,26 +97,26 @@ void serialEvent(Serial myPort)
 
     // ----- validate distances
     /* eliminate bogus errors */
-    boolean distances_valid = true; //<>//
-    if 
-      (
-      (a < 0) ||          //d1 must be less than d2
-      (a > maxDist) ||     //d1 out-of-range 
-      (b > maxDist) ||     //d2 out-of-range
-      (c > maxDist) ||     //d3 out-of-range 
-      (d > maxDist) ||     //d4 out-of-range
-      ((s1 - a) < 0) ||    //these values must be positive
-      ((s1 - b) < 0) || 
-      ((s2 - c) < 0) ||
-      ((s2 - d) < 0) || 
-      ((s1 - Baseline) < 0) ||
-      ((s2 - Baseline) < 0)
-      ) 
-    {
-      distances_valid=false;
-      X=1000;             
-      Y=1000;             
-    }
+    boolean distances_valid = true;
+    //if 
+    //  (
+    //  (a < 0) ||          //d1 must be less than d2
+    //  (a > maxDist) ||     //d1 out-of-range 
+    //  (b > maxDist) ||     //d2 out-of-range
+    //  (c > maxDist) ||     //d3 out-of-range 
+    //  (d > maxDist) ||     //d4 out-of-range
+    //  ((s1 - a) < 0) ||    //these values must be positive
+    //  ((s1 - b) < 0) || 
+    //  ((s2 - c) < 0) ||
+    //  ((s2 - d) < 0) || 
+    //  ((s1 - Baseline) < 0) ||
+    //  ((s2 - Baseline) < 0)
+    //  ) 
+    //{
+    //  distances_valid=false;
+    //  X=1000;             
+    //  Y=1000;             
+    //}
 
     // ----- apply Heron's formula
     if (distances_valid)
@@ -242,6 +242,10 @@ void draw_object()
   strokeWeight(1);
   translate(width*0.2, height*1.1);              //(0,0) now lower-left corner
   
+  //X = 7;
+  //Y = 38;
+  //Z = 53;
+  
   // ----- make the object flash
   if ((frameCount-Frame_count)>4)
   {
@@ -271,7 +275,7 @@ void draw_object()
   // ----- draw lines to corresponding axis
   line(0, 0, 0, Z*4);
   line(0, 0, -X*4, 0);
-  line(0, 0, ((100 - Y)*angle)*4, -(((100 - Y)*angle)*4)); //<>//
+  line(0, 0, ((100 - Y)*angle)*4, -(((100 - Y)*angle)*4));
   
   popMatrix();
   popMatrix();
